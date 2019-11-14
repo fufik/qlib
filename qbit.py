@@ -3,26 +3,43 @@ import cmath
 from error import QbitError
 from functools import singledispatch
 class qbit:
-    def __init__(self,lower,upper):
-        if (abs(lower)**2 + abs(upper)**2) == 1:
-            self.vector = np.array([[upper],[lower]],dtype=complex)
+    def __init__(self,*prms):
+        if len(prms) == 2:
+            lower,upper = prms[0],prms[1]
+            if round((abs(lower)**2 + abs(upper)**2),5) == 1:
+                self.vector = np.array([[upper],[lower]],dtype=complex)
+            else:
+                raise QbitError("The sum of magnitudes' squares is not 1")
+        elif len(prms) is 1:
+            if np.sum(np.square(prms[0])) == (1+0j):
+                self.vector = prms[0]
+            else:
+                print(prms[0], "\nSum: ",np.sum(prms[0]))
+                raise QbitError("Not 1 ")
+            self.vector = prms[0]
         else:
-            raise QbitError("The sum of magnitudes' squares is not 1")
+            raise QbitError("Wrong amount of arguments")
     
     def op_X(self):
         opnot = np.array([[0,1],[1,0]],dtype=complex)
-        return np.matmul(opnot,self.vector)
+        return qbit(np.matmul(opnot,self.vector))
     
     def op_not(self):
-        return op_X(self)
+        return self.op_X()
     
     def op_Y(self):
         opy = np.array([[0,j],[j,0]],dtype=complex)
-        return np.mathmul(opnot,self.vector)
+        return qbit(np.mathmul(opnot,self.vector))
     
     def op_Z(self):
         opy = np.array([[1,0],[0,-1]],dtype=complex)
-        return np.mathmul(opnot,self.vector)
+        return qbit(np.mathmul(opnot,self.vector))
+    
+    def op_H(self):
+        oph = np.array([[1,1],[1,-1]],dtype=complex)
+        oph = (1/cmath.sqrt(2)) * oph
+        return qbit(np.matmul(oph,self.vector))
+        
     
 #def cart_prod(x: np.array,y: np.array):
 #    i = np.array([np.tile(x.transpose()[0], len(y.transpose()[0])), np.repeat(y.transpose()[0], len(x.transpose()[0]))]).transpose()
