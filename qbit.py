@@ -11,7 +11,7 @@ class qbit:
             else:
                 raise QbitError("The sum of magnitudes' squares is not 1")
         elif len(prms) is 1:
-            if np.sum(np.square(prms[0])) == (1+0j):
+            if round(np.sum(np.square(np.absolute(prms[0]))),5) == 1:
                 self.vector = prms[0]
             else:
                 print(prms[0], "\nSum: ",np.sum(prms[0]))
