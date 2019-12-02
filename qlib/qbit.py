@@ -41,13 +41,22 @@ class qbit:
         return qbit(np.matmul(oph,self.vector))
         
     
+    def __eq__(self, other):
+        return (self.vector == other.vector).all()
+    
+    def __mul__(self,other):
+        return self.vector * other.vector
+    
+    def __pow__(self,other):
+        return np.kron(self.vector,other.vector)
+    
 #def cart_prod(x: np.array,y: np.array):
 #    i = np.array([np.tile(x.transpose()[0], len(y.transpose()[0])), np.repeat(y.transpose()[0], len(x.transpose()[0]))]).transpose()
 #    return np.array([[a[0]*a[1] for a in i]]).transpose()
 
-def cart_prod(x: np.array,y: np.array):
-    i = np.array([np.tile(y.transpose()[0], len(x.transpose()[0])), np.repeat(x.transpose()[0], len(y.transpose()[0]))]).transpose()
-    return np.array([[a[0]*a[1] for a in i]]).transpose()
+#def cart_prod(x: np.array,y: np.array):
+#    i = np.array([np.tile(y.transpose()[0], len(x.transpose()[0])), np.repeat(x.transpose()[0], #len(y.transpose()[0]))]).transpose()
+#    return np.array([[a[0]*a[1] for a in i]]).transpose()
 
 
 def cart_prod_qbits(*ar):
@@ -56,7 +65,9 @@ def cart_prod_qbits(*ar):
     base = ar[0].vector
     a = ar[1:]
     for l in a:
-        base = cart_prod(base,l.vector)
+        base = np.kron(base,l.vector)
     return base
 qbit_0 = qbit(0,1)
 qbit_1 = qbit(1,0)
+qbit_sp = qbit_0.op_H()
+qbit_sn = qbit_1.op_H()

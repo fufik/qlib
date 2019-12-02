@@ -1,15 +1,18 @@
 from math      import log
 import qbit
 import numpy as np
+from error import QregisterError
 class qregister:
     def __init__(self,*qbits):
-        if type(qbits[0]) is not qbit.qbit: #from a vector
+        if type(qbits[0]) is np.ndarray: #from a vector
             self.vector = qbits[0]
             self._length = int(log(len(qbits[0]),2))
-        else:
+        elif type(qbits[0]) is qbit.qbit:
             self.qbits = list(qbits)
             self._length = len(self.qbits)
             self.vector = qbit.cart_prod_qbits(qbits)
+        else:
+             raise QregisterError("Wrong parameter types")
     
     def __getitem__(self,key):
         return self.qbits[key]
@@ -23,6 +26,13 @@ class qregister:
         else:
             raise QregisterError("The value is not qbit")
     
+    def __mul__(self,other):
+        return self.vector * other.vector
+    
+    def __pow__(self,other):
+        return np.kron(self.vector,other.vector)
+    
     def __len__(self):
         return self._length
+    
 
