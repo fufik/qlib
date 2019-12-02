@@ -1,10 +1,10 @@
 #!/bin/env python
-import qbit
-from qregister import qregister
-import qgate
+import qlib
 import numpy as np
+
+
 def deutsch():
-    q = qregister(qbit.qbit_0,qbit.qbit_1)
+    q = qregister(qbit_0,qbit_1)
     print("1:{}\n=========".format(q.vector))
     op = np.array([[1, 1, 1, 1],
                    [1,-1, 1,-1],
