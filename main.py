@@ -1,5 +1,5 @@
 #!/bin/env python
-import qlib
+from qlib import *
 import numpy as np
 
 
@@ -23,3 +23,6 @@ def deutsch():
     op = np.kron(had,eye)
     q = qregister(np.matmul(op,q.vector))
     print("4:{}\n=========".format(q.vector))
+    q = bases(q)
+    #print("5:{}\n=========".format(q.vector))
+    return q

@@ -1,5 +1,6 @@
-from qbit import *
-from qregister import *
-from qgate import *
-from error import *
+from qlib.qbit import *
+from qlib.qregister import *
+import qlib.qgate as qgate
+from qlib.error import *
+import matrix as matrix
  

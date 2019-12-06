@@ -1,7 +1,7 @@
 import numpy as np
 import cmath
-from error import QbitError
-from functools import singledispatch
+from qlib.error import QbitError
+
 class qbit:
     def __init__(self,*prms):
         if len(prms) == 2:
@@ -28,7 +28,7 @@ class qbit:
         return self.op_X()
     
     def op_Y(self):
-        opy = np.array([[0,j],[j,0]],dtype=complex)
+        opy = np.array([[0,1j],[1j,0]],dtype=complex)
         return qbit(np.mathmul(opnot,self.vector))
     
     def op_Z(self):
@@ -45,7 +45,7 @@ class qbit:
         return (self.vector == other.vector).all()
     
     def __mul__(self,other):
-        return self.vector * other.vector
+        return np.inner(self.vector.transpose(), other.vector.transpose()).item(0)
     
     def __pow__(self,other):
         return np.kron(self.vector,other.vector)

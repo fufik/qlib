@@ -1,8 +1,7 @@
-from qregister import qregister
-from qbit      import qbit
-import qbit
+from qlib.qregister import qregister
+from qlib.qbit      import *
 import numpy as np
-from error import QregisterError
+from qlib.error import QregisterError
 def cnot(qrin: qregister):
     if len(qrin)!= 2:
         raise QbitError("CNOT input is not 2 qbit in length ")
@@ -18,9 +17,9 @@ def alt_cnot(qrin: qregister):
         raise QbitError("CNOT input is not 2 qbit in length ")
     if hasattr(qrin,'qbits'):
         return cnot(qrin)
-    if qrin[0] == qbit.qbit_0:
+    if qrin[0] == qbit_0:
         return qrin
-    elif qrin[0] == qbit.qbit_1:
+    elif qrin[0] == qbit_1:
         return qregister(qrin[0],qrin[1].op_not())
     else:
         return cnot(qrin)
@@ -47,9 +46,9 @@ def alt_ccnot(qrin: qregister):
         raise QbitError("CNOT input is not 2 qbit in length ")
     if hasattr(qrin,'qbits'):
         return cnot(qrin)
-    if qrin[0] == qbit.qbit_0 and qrin[1] == qbit.qbit_0:
+    if qrin[0] == qbit_0 and qrin[1] == qbit_0:
         return qrin
-    elif qrin[0] == qbit.qbit_1 and qrin[1] == qbit.qbit_1:
+    elif qrin[0] == qbit_1 and qrin[1] == qbit_1:
         return qregister(qrin[0],qrin[1].op_not())
     else:
         return cnot(qrin)
