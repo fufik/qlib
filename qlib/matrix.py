@@ -9,4 +9,4 @@ H = (1/cmath.sqrt(2)) * np.array([[1,1],[1,-1]],dtype=complex)
 def gen(matrix,n):
     if n == 1:
         return matrix
-    return np.kron(matrix,gen(n-1))
+    return np.kron(matrix,gen(matrix,n-1))

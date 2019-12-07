@@ -1,7 +1,7 @@
 import numpy as np
 import cmath
 from qlib.error import QbitError
-
+import qlib.matrix as mat
 class qbit:
     def __init__(self,*prms):
         if len(prms) == 2:
@@ -21,24 +21,24 @@ class qbit:
             raise QbitError("Wrong amount of arguments")
     
     def op_X(self):
-        opnot = np.array([[0,1],[1,0]],dtype=complex)
-        return qbit(np.matmul(opnot,self.vector))
+        #opnot = np.array([[0,1],[1,0]],dtype=complex)
+        return qbit(np.matmul(mat.X,self.vector))
     
     def op_not(self):
         return self.op_X()
     
     def op_Y(self):
-        opy = np.array([[0,1j],[1j,0]],dtype=complex)
-        return qbit(np.mathmul(opnot,self.vector))
+        #opy = np.array([[0,1j],[1j,0]],dtype=complex)
+        return qbit(np.mathmul(mat.Y,self.vector))
     
     def op_Z(self):
-        opy = np.array([[1,0],[0,-1]],dtype=complex)
-        return qbit(np.mathmul(opnot,self.vector))
+        #opy = np.array([[1,0],[0,-1]],dtype=complex)
+        return qbit(np.mathmul(mat.Z,self.vector))
     
     def op_H(self):
-        oph = np.array([[1,1],[1,-1]],dtype=complex)
-        oph = (1/cmath.sqrt(2)) * oph
-        return qbit(np.matmul(oph,self.vector))
+        #oph = np.array([[1,1],[1,-1]],dtype=complex)
+        #oph = (1/cmath.sqrt(2)) * oph
+        return qbit(np.matmul(mat.H,self.vector))
         
     
     def __eq__(self, other):
@@ -49,6 +49,12 @@ class qbit:
     
     def __pow__(self,other):
         return np.kron(self.vector,other.vector)
+    
+    def __repr__(self):
+        return "qbit[{},{}]".format(self.vector[0][0],self.vector[1][0])
+    
+    def __str__(self):
+        return "qbit[{},{}]".format(self.vector[0][0],self.vector[1][0])
     
 #def cart_prod(x: np.array,y: np.array):
 #    i = np.array([np.tile(x.transpose()[0], len(y.transpose()[0])), np.repeat(y.transpose()[0], len(x.transpose()[0]))]).transpose()
