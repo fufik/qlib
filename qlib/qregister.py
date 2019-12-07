@@ -103,7 +103,7 @@ def _binfill(size:int):
     
     
 def bases(qrin: qregister):
-    d = sqrt(abs(qrin * qrin))
+    d = sqrt(abs(qrin * qrin)) #normalising coefficient
     states = _binfill(len(qrin))
     probs = list()
     for n,i in enumerate(states):
