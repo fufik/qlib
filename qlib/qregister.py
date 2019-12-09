@@ -111,12 +111,13 @@ def bases(qrin: qregister):
         b = (abs(a)/d)**2
         #print("Pr:",b)
         probs.append(round(b,5))
-    r = list(filter(lambda x: x[0] != 0.0,zip(probs,states)))
+    r = list(zip(probs,states))
     return r
     
 def measure(qrin: qregister):
     q = bases(qrin)
-    q = list(zip(*q))
+    r = list(filter(lambda x: x[0] != 0.0,q))
+    q = list(zip(*r))
     probs = q[0]
     states = q[1]
     res = np.random.choice(len(states),1,p=probs).item(0)

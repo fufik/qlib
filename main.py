@@ -36,3 +36,19 @@ def deutschn(n):
     q = bases(q)
     return q
 
+def fourier(): #Quantum Fourier transform algorithm
+    q = qregister(qbit_0,qbit_1)
+    print("1:{}\n=========".format(q.vector))
+    op = np.kron(matrix.H,matrix.EYE)
+    q = qregister(np.matmul(op,q.vector))
+    print("2:{}\n=========".format(q.vector))
+    q = qgate.swap2(q)
+    op = matrix.genpshiftF(2,2)
+    q = qregister(np.matmul(op,q.vector))
+    print("3:{}\n=========".format(q.vector))
+    op = np.kron(matrix.H,matrix.EYE)
+    q = qregister(np.matmul(op,q.vector))
+    print("4:{}\n=========".format(q.vector))
+    return q
+
+

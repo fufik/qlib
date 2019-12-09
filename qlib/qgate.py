@@ -2,6 +2,7 @@ from qlib.qregister import qregister
 from qlib.qbit      import *
 import numpy as np
 from qlib.error import QregisterError
+import qlib.matrix as mat
 def cnot(qrin: qregister):
     if len(qrin)!= 2:
         raise QbitError("CNOT input is not 2 qbit in length ")
@@ -82,8 +83,7 @@ def poor_H(qrin:qregister):
     for i in qrin.qbits:
         a.append(i.op_H())
     return qregister(*a) #unpacking the list in the parameters
-#
-#def op_ncnot(qrin: qregister):
-#    
-#    op = np.identity(len(qrin)+1,dtype=complex)
-#    return np.matmul(op,qrin.vector)
+
+def op_ncnot(qrin: qregister):    
+    op = mat.gen("cnot",len(qrin))
+    return qregister(np.matmul(op,qrin.vector))
