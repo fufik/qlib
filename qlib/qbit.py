@@ -44,9 +44,12 @@ class qbit:
     def __eq__(self, other):
         return (self.vector == other.vector).all()
     
-    def __mul__(self,other):
+    def __mul__(self,other): #<a|a>
         return np.inner(self.vector.transpose(), other.vector.transpose()).item(0)
-    
+
+    def __matmul__(self,other): #|a><a|
+        return np.outer(self.vector.transpose(), other.vector.transpose())
+
     def __pow__(self,other):
         return np.kron(self.vector,other.vector)
     
