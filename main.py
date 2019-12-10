@@ -67,7 +67,8 @@ def fourier(qrin:qregister):
             op_ri = (op_I**line) * op_I * (op_I**(i-2)) * (qbit_0 @ qbit_0) * (op_I**(n-line)) + 
                     (op_I**line) * op_R * (op_I**(i-2)) * (qbit_1 @ qbit_1) * (op_I**(n-line))
             op_a = op_ri @ op_a
-    op_a = (op_I **(n-1)) * op_H) @ op_a
-    q = op_a @ qrin
+        op = op_a @ op
+    op = (op_I **(n-1)) * op_H) @ op
+    q = op @ qrin
     #TODO SWAP(n)
     return q
