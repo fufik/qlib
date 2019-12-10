@@ -38,7 +38,7 @@ class qoperator:
     def __pow__(self,other):
         if type(other) is not int:
             raise TypeError(f"unsupported operand type for **: '{type(other)}'")
-        if n ==0:
+        if other == 0:
             return qoperator(np.array([[1]],dtype=complex)) #does NOTHING on matmul! :)
 
         n = self
