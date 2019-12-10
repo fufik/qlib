@@ -59,3 +59,15 @@ def fourier(qrin:qregister):
     if type(qrin) is not qregister:
         raise TypeError("not qregister")
     n = len(qregister)
+    op = op_I ** n
+    for line in range(n):
+        op_a = (op_I**line) * op_H * (op_I **n-1)  #if line==0 prefix gets [[1]]
+        for i in range(1,n+1 - line ): #2,3,4,..,n
+            op_R = qoperator(matrix.genpshiftF(i,1))
+            op_ri = (op_I**line) * op_I * (op_I**(i-2)) * (qbit_0 @ qbit_0) * (op_I**(n-line)) + 
+                    (op_I**line) * op_R * (op_I**(i-2)) * (qbit_1 @ qbit_1) * (op_I**(n-line))
+            op_a = op_ri @ op_a
+    op_a = (op_I **(n-1)) * op_H) @ op_a
+    q = op_a @ qrin
+    #TODO SWAP(n)
+    return q

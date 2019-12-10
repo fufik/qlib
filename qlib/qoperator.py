@@ -37,7 +37,10 @@ class qoperator:
     
     def __pow__(self,other):
         if type(other) is not int:
-            raise TypeError(f"unsupported operand type for **: '{type(other)}'") 
+            raise TypeError(f"unsupported operand type for **: '{type(other)}'")
+        if n ==0:
+            return qoperator(np.array([[1]],dtype=complex)) #does NOTHING on matmul! :)
+
         n = self
         for i in range(1,other):
             n = n * self #kronecker product
@@ -74,10 +77,10 @@ op_SWAP2 = qoperator(np.array([[1,0,0,0],
                                [0,1,0,0],
                                [0,0,0,1]],dtype=complex))
 op_SWAP3 = qoperator(np.array([[1,0,0,0,0,0,0,0],
-                                [0,0,0,0,1,0,0,0],
-                                [0,0,1,0,0,0,0,0],
-                                [0,0,0,0,0,0,1,0],
-                                [0,1,0,0,0,0,0,0],
-                                [0,0,0,0,0,1,0,0],
-                                [0,0,0,1,0,0,0,0],
-                                [0,0,0,0,0,0,0,1]],dtype=complex))
+                               [0,0,0,0,1,0,0,0],
+                               [0,0,1,0,0,0,0,0],
+                               [0,0,0,0,0,0,1,0],
+                               [0,1,0,0,0,0,0,0],
+                               [0,0,0,0,0,1,0,0],
+                               [0,0,0,1,0,0,0,0],
+                               [0,0,0,0,0,0,0,1]],dtype=complex))
