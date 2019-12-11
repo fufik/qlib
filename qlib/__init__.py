@@ -4,3 +4,4 @@ from qlib.qregister import *
 from qlib.error import *
 import qlib.matrix as matrix
 from qlib.qoperator import * 
+from qlib.algorithm import *
