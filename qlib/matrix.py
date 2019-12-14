@@ -29,3 +29,5 @@ def gen(matrix,n):
     if n == 1:
         return matrix
     return np.kron(matrix,gen(matrix,n-1))
+
+

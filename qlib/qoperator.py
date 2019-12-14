@@ -3,6 +3,7 @@ from qlib.qbit      import *
 import numpy as np
 from qlib.error import QoperatorError
 import qlib.matrix as ma
+from collections import deque as deq
 class qoperator:
     def __init__(self,matrix:np.ndarray):
         if type(matrix) is not np.ndarray:
@@ -91,3 +92,38 @@ def op_R(angle):
 
 def op_RF(coeff):
     return qoperator(genpshiftF(coeff,1))
+
+def genswap(n):
+    def _binfill(size:int):
+        def b2q(n):
+            return qbit_0 if n == 0b0 else qbit_1
+
+        states = list()
+        states_r = list()
+        up_lim = 2 ** size
+        for x in range(0,up_lim):
+            #print(f"{x} is {x:b} in binary")
+            arg = deq()
+            arg_r = list()
+            n = x
+            for f in range(size):           #parsing each number into an array of bits
+                arg.appendleft(b2q(n%2))
+                arg_r.append(b2q(n%2))    #thus converting every bit into a basic qbit
+                n = n>>1
+            #print(arg)
+            q = qregister(*arg)
+            states.append(q)
+            q = qregister(*arg_r)
+            states_r.append(q)
+        return states,states_r
+
+    s,sr = _binfill(n)
+    rs = list(zip(s,sr))
+    op = qoperator(np.array([[0]],dtype=complex))
+    for i in rs:
+        print(i[0])
+        print(i[1])
+        a = (i[0] @ i[1])
+        op = op + a
+    return op
+
