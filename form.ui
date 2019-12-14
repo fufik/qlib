@@ -81,6 +81,35 @@
         <string>Вывод</string>
        </property>
       </widget>
+      <widget class="QRadioButton" name="rb_coef">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>120</y>
+         <width>141</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Коэффициенты</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="rb_qbit">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>120</y>
+         <width>113</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Кубиты</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>
@@ -143,19 +172,6 @@
         <string>Оп. Адамара</string>
        </property>
       </widget>
-      <widget class="QRadioButton" name="b_CCNOT">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>70</y>
-         <width>113</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Оп. CCNOT</string>
-       </property>
-      </widget>
       <widget class="QRadioButton" name="b_R">
        <property name="geometry">
         <rect>
@@ -173,9 +189,9 @@
        <property name="geometry">
         <rect>
          <x>170</x>
-         <y>130</y>
+         <y>100</y>
          <width>211</width>
-         <height>25</height>
+         <height>21</height>
         </rect>
        </property>
        <property name="text">
@@ -225,7 +241,7 @@
        <property name="geometry">
         <rect>
          <x>170</x>
-         <y>100</y>
+         <y>70</y>
          <width>113</width>
          <height>25</height>
         </rect>

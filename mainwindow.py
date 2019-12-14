@@ -1,7 +1,7 @@
 #!/bin/env python
 from qlib import *
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QDialog, QMessageBox, QLineEdit,QFormLayout,QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QDialog, QMessageBox, QLineEdit,QFormLayout,QLabel,QSpinBox
 from PyQt5.QtCore import pyqtSlot, QRegExp
 from PyQt5.QtGui import QRegExpValidator
 import sys
@@ -11,6 +11,12 @@ class Win(QMainWindow):
         super(Win, self).__init__()
         self.ui = uic.loadUi('form.ui', self)
         self.ui.show()
+        self.LE_mode = False        #False -- coefficients, True -- qbits
+        self.rb_qbit.mode = True
+        self.rb_coef.mode = False
+        self.rb_qbit.toggled.connect(self.changeMode)
+        self.rb_coef.toggled.connect(self.changeMode)
+
 
         self.sa_layout = QFormLayout()
         self.scrollAreaWidgetContents.setLayout(self.sa_layout)
@@ -29,12 +35,10 @@ class Win(QMainWindow):
         self.b_R.toggled.connect(self.onClicked)
         self.b_CNOT.op = "CNOT"
         self.b_CNOT.toggled.connect(self.onClicked)
-        self.b_CCNOT.op = "CCNOT"
-        self.b_CCNOT.toggled.connect(self.onClicked)
         self.b_Fourier.op = "Fourier"
         self.b_Fourier.toggled.connect(self.onClicked)
         
-        self.line_out.setReadOnly(True)
+        #self.line_out.setReadOnly(True)
         rx = QRegExp('[0-9|,|.|-|j|+]*')
         validator = QRegExpValidator(rx, self)
         self.line_in.setValidator(validator)
@@ -46,7 +50,6 @@ class Win(QMainWindow):
         self.b_Z.setEnabled(False)
         self.b_H.setEnabled(False)
         self.b_CNOT.setEnabled(False)
-        self.b_CCNOT.setEnabled(False)
         self.b_R.setEnabled(False)
         self.b_Fourier.setEnabled(False)
 
@@ -69,26 +72,51 @@ class Win(QMainWindow):
                 par = QLineEdit()
                 par.setValidator(validator)
                 self.sa_layout.addRow("Тета",par)
+            if rb.op == "CNOT":
+                rx = QRegExp('[0-9|,]*')
+                validator = QRegExpValidator(rx, self)
+                par = QLineEdit()
+                par2 = QLineEdit()
+                par.setValidator(validator)
+                par2.setValidator(validator)
+                self.sa_layout.addRow("C",par)
+                self.sa_layout.addRow("NOT",par2)
 
         
     def act_f(self):
         ins = self.line_in.text()
-        c = [complex(i) for i in ins.split(',')]
-        q = np.array([c],dtype=complex)
-        n = len(q[0])
-        q = qregister(q.transpose())
-        res = qregister(np.array([[1]],dtype=complex))
+        if not self.LE_mode: 
+            c = [complex(i) for i in ins.split(',')]
+            q = np.array([c],dtype=complex) 
+            n = int(log(len(q[0]),2)) #length in qbits
+            q = qregister(q.transpose()) #input qregister
+            res = qregister(np.array([[1]],dtype=complex))
+        else:
+            arg = list()
+            for c in ins:
+                if c == '0':
+                    arg.append(qbit_0)
+                elif c == '1':
+                    arg.append(qbit_1)
+                elif c=='+':
+                    arg.append(qbit_sp)
+                elif c=='-':
+                    arg.append(qbit_sn)
+
+            q = qregister(*arg)
+            n = len(q)
+            res = qregister(np.array([[1]],dtype=complex))
         if self.operator == "X":
-            op = op_X**(int(log(n,2)))
+            op = op_X**n
             res = op @ q
         elif self.operator == "Y":
-            op = op_Y**(int(log(n,2)))
+            op = op_Y**n
             res = op @ q
         elif self.operator == "Z":
-            op = op_Z**(int(log(n,2)))
+            op = op_Z**n
             res = op @ q
         elif self.operator == "H":
-            op = op_H**(int(log(n,2)))
+            op = op_H**n
             res = op @ q
         elif self.operator == "R":
             try:
@@ -97,11 +125,50 @@ class Win(QMainWindow):
                 self.line_out.setText("Неправильно установлен коэффициент Тета")
                 return
             op_R =  qoperator(matrix.genpshift(angle,1))
-            op = op_R**(int(log(n,2)))
+            op = op_R**n
+            res = op @ q
+        elif self.operator == "CNOT":
+            try:
+                s = self.sa_layout.itemAt(0,1).widget().text()
+                Cs = [int(i) for i in s.split(',')]
+            except Exception as e:
+                print(e)
+                self.line_out.setText("Ошибка обработки параметров C")
+                return
+            try:
+                s = self.sa_layout.itemAt(1,1).widget().text()
+                NOTs = [int(i) for i in s.split(',')]
+            except:
+                self.line_out.setText("Ошибка обработки параметров NOT")
+                return
+            z = Cs + NOTs
+            for i in z:
+                if i > n:
+                    self.line_out.setText("Превышение размеров курегистра")
+                    return
+            Cs = np.array(Cs) -1
+            NOTs = np.array(NOTs) -1
+            list_1 = list()
+            list_2 = list()
+            for i in range(n):
+                list_1.append(op_I)
+                list_2.append(op_I)
+            for i in Cs:
+                list_1[i] = (qbit_0 @ qbit_0)
+                list_2[i] = (qbit_1 @ qbit_1)
+            for i in NOTs:                 
+                list_2[i] = op_X
+
+            op_l = op_I**0 #1
+            op_r = op_I**0
+            for i in list_1:
+                op_l = op_l * i
+            for i in list_2:
+                op_r = op_r * i
+            op = op_l + op_r #operator is ready
             res = op @ q
 
-
-
+        print(res)
         answer = ', '.join([str(e) for e in (res.vector.transpose()[0]) ])
         self.line_out.setText(answer)
 
@@ -111,11 +178,11 @@ class Win(QMainWindow):
         if t != "":
             r = self.checkparse(t)
             #print(r)
-            if r > 1:
-                if r==2:
+            if r > 0:
+                if r>=1 and r<2:
                     self.unblock1()
                     self.block2()
-                else:
+                if r>=2:
                     self.unblock1()
                     self.unblock2()
             else:
@@ -137,7 +204,6 @@ class Win(QMainWindow):
     
     def block2(self):
         self.b_CNOT.setEnabled(False)
-        self.b_CCNOT.setEnabled(False)
         self.b_Fourier.setEnabled(False)
     
     def unblock1(self):
@@ -149,11 +215,24 @@ class Win(QMainWindow):
     
     def unblock2(self):
         self.b_CNOT.setEnabled(True)
-        self.b_CCNOT.setEnabled(True)
         self.b_Fourier.setEnabled(True)
 
 
     def checkparse(self,ins: str):
+        if self.LE_mode == True:
+            arg = list()
+            for c in ins:
+                if c == '0':
+                    arg.append(qbit_0)
+                elif c == '1':
+                    arg.append(qbit_1)
+                elif c=='+':
+                    arg.append(qbit_sp)
+                elif c=='-':
+                    arg.append(qbit_sn)
+            return len(arg)
+        
+        #else
         try:
             c = [complex(i) for i in ins.split(',')]
         except:
@@ -164,9 +243,23 @@ class Win(QMainWindow):
         #print(x)
         if x > 0:
             if x%1 == 0:
-                return len(values)
+                return x
         return 0
 
+    def changeMode(self):
+        rb = self.sender()
+        if rb.mode!=self.LE_mode:
+            self.line_in.setText("")
+            self.line_out.setText("")
+        self.LE_mode = rb.mode
+        if rb.mode == False:
+            rx = QRegExp('[0-9|,|.|-|j|+]*')
+            validator = QRegExpValidator(rx, self)
+            self.line_in.setValidator(validator)
+        else:
+            rx = QRegExp('[0|1|-|+]*')
+            validator = QRegExpValidator(rx, self)
+            self.line_in.setValidator(validator)
 
     #@pyqtSlot()
     #def forth_butt_f(self):
