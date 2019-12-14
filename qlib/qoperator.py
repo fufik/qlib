@@ -93,7 +93,7 @@ def op_R(angle):
 def op_RF(coeff):
     return qoperator(genpshiftF(coeff,1))
 
-def genswap(n):
+def op_SWAPN(n):
     def _binfill(size:int):
         def b2q(n):
             return qbit_0 if n == 0b0 else qbit_1

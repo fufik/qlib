@@ -74,5 +74,6 @@ def fourier(qrin:qregister):
         op = op_a @ op
     op = ((op_I **(n-1)) * op_H) @ op
     q = op @ qrin
-    #TODO SWAP(n)
+    op = op_SWAPN(len(q))
+    q = op @ q
     return q

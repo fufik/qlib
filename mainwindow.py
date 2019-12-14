@@ -118,6 +118,8 @@ class Win(QMainWindow):
         elif self.operator == "H":
             op = op_H**n
             res = op @ q
+        elif self.operator == "Fourier":
+            res = fourier(q)
         elif self.operator == "R":
             try:
                 angle = float(self.sa_layout.itemAt(0,1).widget().text())
