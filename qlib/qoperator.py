@@ -84,3 +84,10 @@ op_SWAP3 = qoperator(np.array([[1,0,0,0,0,0,0,0],
                                [0,0,0,0,0,1,0,0],
                                [0,0,0,1,0,0,0,0],
                                [0,0,0,0,0,0,0,1]],dtype=complex))
+
+
+def op_R(angle):
+    return qoperator(genpshift(angle,1))
+
+def op_RF(coeff):
+    return qoperator(genpshiftF(coeff,1))
