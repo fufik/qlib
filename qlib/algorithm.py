@@ -1,6 +1,5 @@
 #!/bin/env python
 from qlib import *
-import numpy as np
 
 def deutsch():
     q = qregister(qbit_0,qbit_1)

@@ -1,46 +1,47 @@
 from qlib.qregister import qregister
 from qlib.qbit      import *
-import numpy as np
+import sympy as sp
+from sympy.matrices.dense import MutableDenseMatrix as MatrixType
 from qlib.error import QoperatorError
 import qlib.matrix as ma
 from collections import deque as deq
 class qoperator:
-    def __init__(self,matrix:np.ndarray):
-        if type(matrix) is not np.ndarray:
-            raise QoperatorError("argument must be of type numpy.ndarray")
+    def __init__(self,matrix: MatrixType):
+        if type(matrix) is not MatrixType:
+            raise QoperatorError("argument must be of type sympy.<..>.MutableDenseMatrix")
         self.matrix = matrix
     
     def __add__(self,other):
         if type(other) is qoperator:
             return qoperator(self.matrix + other.matrix)
-        elif type(other) is np.ndarray:
+        elif type(other) is MatrixType:
             return qoperator(self.matrix + other)
 
     def __matmul__(self,other):
         if type(other) is qoperator:
-            return qoperator(np.matmul(self.matrix,other.matrix))
+            return qoperator(self.matrix @ other.matrix)
         elif type(other) is qregister:
-            return qregister(np.matmul(self.matrix,other.vector))
+            return qregister(self.matrix @ other.vector)
         elif type(other) is qbit:
-           return qbit(np.matmul(self.matrix,other.vector))
-        elif type(other) is np.ndarray:
+           return qbit(self.matrix @ other.vector)
+        elif type(other) is MatrixType:
             return qoperator(self @ other)
 
     def __mul__(self,other):
         if type(other) is qoperator:
-            return qoperator(np.kron(self.matrix,other.matrix))
+            return qoperator(sp.Matrix(sp.kronecker_product(self.matrix,other.matrix)))
         elif type(other) is qregister:
-            return qregister(np.kron(self.matrix,other.vector))
+            return qregister(sp.Matrix(sp.kronecker_product(self.matrix,other.vector)))
         elif type(other) is qbit:
-            return qbit(np.kron(self.matrix,other.vector))
-        elif type(other) is np.ndarray:
-            return qoperator(np.kron(self.matrix, other))
+            return qbit(sp.Matrix(sp.kronecker_product(self.matrix,other.vector)))
+        elif type(other) is MatrixType:
+            return qoperator(sp.Matrix(sp.kronecker_product(self.matrix, other)))
     
     def __pow__(self,other):
         if type(other) is not int:
             raise TypeError(f"unsupported operand type for **: '{type(other)}'")
         if other == 0:
-            return qoperator(np.array([[1]],dtype=complex)) #does NOTHING on matmul! :)
+            return qoperator(sp.Matrix([1])) #does NOTHING on matmul! :)
 
         n = self
         for i in range(1,other):
@@ -60,31 +61,31 @@ op_H = qoperator(ma.H)
 op_X = qoperator(ma.X)
 op_Y = qoperator(ma.Y)
 op_Z = qoperator(ma.Z)
-op_CNOT = qoperator(np.array([[1,0,0,0],
+op_CNOT = qoperator(sp.Matrix([[1,0,0,0],
                               [0,1,0,0],
                               [0,0,0,1],
-                              [0,0,1,0]],dtype=complex))
-op_CCNOT = qoperator(np.array([[1,0,0,0,0,0,0,0],
+                              [0,0,1,0]]))
+op_CCNOT = qoperator(sp.Matrix([[1,0,0,0,0,0,0,0],
                                [0,1,0,0,0,0,0,0],
                                [0,0,1,0,0,0,0,0],
                                [0,0,0,1,0,0,0,0],
                                [0,0,0,0,1,0,0,0],
                                [0,0,0,0,0,1,0,0],
                                [0,0,0,0,0,0,0,1],
-                               [0,0,0,0,0,0,1,0]],dtype=complex))
+                               [0,0,0,0,0,0,1,0]]))
 
-op_SWAP2 = qoperator(np.array([[1,0,0,0],
+op_SWAP2 = qoperator(sp.Matrix([[1,0,0,0],
                                [0,0,1,0],
                                [0,1,0,0],
-                               [0,0,0,1]],dtype=complex))
-op_SWAP3 = qoperator(np.array([[1,0,0,0,0,0,0,0],
+                               [0,0,0,1]],))
+op_SWAP3 = qoperator(sp.Matrix([[1,0,0,0,0,0,0,0],
                                [0,0,0,0,1,0,0,0],
                                [0,0,1,0,0,0,0,0],
                                [0,0,0,0,0,0,1,0],
                                [0,1,0,0,0,0,0,0],
                                [0,0,0,0,0,1,0,0],
                                [0,0,0,1,0,0,0,0],
-                               [0,0,0,0,0,0,0,1]],dtype=complex))
+                               [0,0,0,0,0,0,0,1]]))
 
 
 def op_R(angle):
@@ -119,7 +120,7 @@ def op_SWAPN(n):
 
     s,sr = _binfill(n)
     rs = list(zip(s,sr))
-    op = qoperator(np.array([[0]],dtype=complex))
+    op = qoperator(sp.zeros(2**n))
     for i in rs:
         print(i[0])
         print(i[1])

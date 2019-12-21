@@ -1,11 +1,13 @@
 from math      import log, sqrt
 from qlib import *
-import numpy as np
+import sympy as sp
+from sympy.matrices.dense import MutableDenseMatrix as MatrixType
 from qlib.error import QregisterError
 from collections import deque as deq
+import random
 class qregister:
     def __init__(self,*qbits):
-        if type(qbits[0]) is np.ndarray: #from a vector
+        if type(qbits[0]) is MatrixType: #from a vector
             self.vector = qbits[0]
             self._length = int(log(len(qbits[0]),2))
         elif type(qbits[0]) is qbit:
@@ -28,13 +30,13 @@ class qregister:
             raise QregisterError("The value is not qbit")
     
     def __mul__(self,other): #<a|a>
-        return np.inner(self.vector.transpose(), other.vector.transpose()).item(0)
+        return (self.vector.transpose() @ other.vector)[0]
     
     def __matmul__(self,other): #|a><a|
-        return np.outer(self.vector.transpose(), other.vector.transpose())
+        return (self.vector @ other.vector.transpose())
     
     def __pow__(self,other):
-        return np.kron(self.vector,other.vector)
+        return sp.Matrix(sp.kronecker_product(self.vector,other.vector))
     
     def __len__(self):
         return self._length
@@ -62,7 +64,8 @@ def legmeasure(qrin:qregister):
         b = (abs(a)/d)**2
         #print("Product: ", a, b)
         probs.append(b)
-    res = np.random.choice(len(states),1,p=probs).item(0)
+    res = random.choice(range(len(states)),probs,k=1)[0]    
+    #res = np.random.choice(len(states),1,p=probs).item(0)
     #print("Result n {}:\n".format(res,states[res]))
     return states[res]
     
@@ -123,5 +126,6 @@ def measure(qrin: qregister):
     q = list(zip(*r))
     probs = q[0]
     states = q[1]
-    res = np.random.choice(len(states),1,p=probs).item(0)
+    res = random.choice(range(len(states)),probs,k=1)[0]
+    #res = np.random.choice(len(states),1,p=probs).item(0)
     return states[res]
