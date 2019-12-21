@@ -1,5 +1,6 @@
 from qlib.qregister import qregister
 from qlib.qbit      import *
+from qlib.matrix    import *
 import sympy as sp
 from sympy.matrices.dense import MutableDenseMatrix as MatrixType
 from qlib.error import QoperatorError

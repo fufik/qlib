@@ -39,7 +39,7 @@ class Win(QMainWindow):
         self.b_Fourier.toggled.connect(self.onClicked)
         
         #self.line_out.setReadOnly(True)
-        rx = QRegExp('[0-9|,|.|-|j|+]*')
+        rx = QRegExp('[0-9|,|.|-|j|+|a-z]*')
         validator = QRegExpValidator(rx, self)
         self.line_in.setValidator(validator)
         self.line_in.textChanged.connect(self.line_in_f)
@@ -63,11 +63,13 @@ class Win(QMainWindow):
 
             #cleaning scrollarea widgets
             n = self.sa_layout.rowCount()
-            for i in range(n):
-                self.sa_layout.removeRow(i)
-
+            print(n)
+            while self.sa_layout.count():
+                c = self.sa_layout.takeAt(0)
+                if c.widget():
+                    c.widget().deleteLater()
             if rb.op == "R": 
-                rx = QRegExp('[0-9|.|-]*')
+                rx = QRegExp('[0-9|a-z|.|-]*')
                 validator = QRegExpValidator(rx, self)
                 par = QLineEdit()
                 par.setValidator(validator)
@@ -88,11 +90,11 @@ class Win(QMainWindow):
     def act_f(self):
         ins = self.line_in.text()
         if not self.LE_mode: 
-            c = [complex(i) for i in ins.split(',')]
-            q = np.array([c],dtype=complex) 
-            n = int(log(len(q[0]),2)) #length in qbits
-            q = qregister(q.transpose()) #input qregister
-            res = qregister(np.array([[1]],dtype=complex))
+            c = ins.split(',')
+            q = sp.Matrix(c) 
+            n = int(log(len(q),2)) #length in qbits
+            q = qregister(q) #input qregister
+            res = qregister(sp.Matrix([1]))
         else:
             arg = list()
             for c in ins:
@@ -105,11 +107,13 @@ class Win(QMainWindow):
                 elif c=='-':
                     arg.append(qbit_sn)
 
-            q = qregister(*arg)
+            q = qregister(*arg)   
             n = len(q)
-            res = qregister(np.array([[1]],dtype=complex))
+            res = qregister(sp.Matrix([1]))
+        print("QR:",q)
         if self.operator == "X":
             op = op_X**n
+            print("OP: ",op)
             res = op @ q
         elif self.operator == "Y":
             op = op_Y**n
@@ -150,8 +154,10 @@ class Win(QMainWindow):
                 if i > n:
                     self.line_out.setText("Превышение размеров курегистра")
                     return
-            Cs = np.array(Cs) -1
-            NOTs = np.array(NOTs) -1
+            for i in range(len(Cs)):
+                Cs[i] -=1
+            for i in range(len(NOTs)):
+                NOTs[i] -=1
             list_1 = list()
             list_2 = list()
             for i in range(n):
@@ -173,7 +179,7 @@ class Win(QMainWindow):
             res = op @ q
 
         print(res)
-        answer = ', '.join([str(e) for e in (res.vector.transpose()[0]) ])
+        answer = (', '.join([str(e) for e in (res.vector.transpose()) ])).replace('I','j')
         self.line_out.setText(answer)
 
     def line_in_f(self):
@@ -238,12 +244,11 @@ class Win(QMainWindow):
         
         #else
         try:
-            c = [complex(i) for i in ins.split(',')]
+            c = ins.split(',')
         except:
             return 0 # impossible operand
         #print(c)
-        values = np.array(c,dtype=complex)
-        x =  math.log(len(values),2)
+        x =  math.log(len(c),2)
         #print(x)
         if x > 0:
             if x%1 == 0:
@@ -257,7 +262,7 @@ class Win(QMainWindow):
             self.line_out.setText("")
         self.LE_mode = rb.mode
         if rb.mode == False:
-            rx = QRegExp('[0-9|,|.|-|j|+]*')
+            rx = QRegExp('[0-9|a-z|,|.|-|j|+]*')
             validator = QRegExpValidator(rx, self)
             self.line_in.setValidator(validator)
         else:
