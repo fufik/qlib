@@ -1,6 +1,5 @@
 from qlib.qregister import qregister
 from qlib.qbit      import *
-from qlib.matrix    import *
 import sympy as sp
 from sympy.matrices.dense import MutableDenseMatrix as MatrixType
 from qlib.error import QoperatorError
@@ -90,10 +89,10 @@ op_SWAP3 = qoperator(sp.Matrix([[1,0,0,0,0,0,0,0],
 
 
 def op_R(angle):
-    return qoperator(genpshift(angle,1))
+    return qoperator(ma.genpshift(angle,1))
 
 def op_RF(coeff):
-    return qoperator(genpshiftF(coeff,1))
+    return qoperator(ma.genpshiftF(coeff,1))
 
 def op_SWAPN(n):
     def _binfill(size:int):
