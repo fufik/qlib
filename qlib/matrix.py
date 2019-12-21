@@ -3,7 +3,7 @@ import cmath
 import math
 EYE = sp.eye(2)
 X = sp.Matrix([[0,1],[1,0]])
-Y = sp.Matrix([[0,1j],[1j,0]])
+Y = sp.Matrix([[0,-1j],[1j,0]])
 Z = sp.Matrix([[1,0],[0,-1]])
 H = (1/cmath.sqrt(2)) * sp.Matrix([[1,1],[1,-1]])
 
