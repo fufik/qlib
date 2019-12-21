@@ -8,6 +8,8 @@ class qregister:
         if type(qbits[0]) is np.ndarray: #from a vector
             self.vector = qbits[0]
             self._length = int(log(len(qbits[0]),2))
+            if 2**self._length != len(self.vector):
+               raise QregisterError("Wrong number of qbits")
         elif type(qbits[0]) is qbit:
             self.qbits = list(qbits)
             self._length = len(self.qbits)

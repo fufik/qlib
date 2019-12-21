@@ -1,5 +1,6 @@
 from qlib.qregister import qregister
 from qlib.qbit      import *
+from qlib.matrix    import *
 import numpy as np
 from qlib.error import QoperatorError
 import qlib.matrix as ma

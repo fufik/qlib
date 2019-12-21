@@ -63,9 +63,10 @@ class Win(QMainWindow):
 
             #cleaning scrollarea widgets
             n = self.sa_layout.rowCount()
-            for i in range(n):
-                self.sa_layout.removeRow(i)
-
+            while self.sa_layout.count():
+                c = self.sa_layout.takeAt(0)
+                if c.widget():
+                    c.widget().deleteLater()
             if rb.op == "R": 
                 rx = QRegExp('[0-9|.|-]*')
                 validator = QRegExpValidator(rx, self)
