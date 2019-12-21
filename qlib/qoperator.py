@@ -1,6 +1,5 @@
 from qlib.qregister import qregister
 from qlib.qbit      import *
-from qlib.matrix    import *
 import numpy as np
 from qlib.error import QoperatorError
 import qlib.matrix as ma
@@ -89,10 +88,10 @@ op_SWAP3 = qoperator(np.array([[1,0,0,0,0,0,0,0],
 
 
 def op_R(angle):
-    return qoperator(genpshift(angle,1))
+    return qoperator(ma.genpshift(angle,1))
 
 def op_RF(coeff):
-    return qoperator(genpshiftF(coeff,1))
+    return qoperator(ma.genpshiftF(coeff,1))
 
 def op_SWAPN(n):
     def _binfill(size:int):
