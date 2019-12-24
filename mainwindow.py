@@ -73,7 +73,7 @@ class Win(QMainWindow):
                 validator = QRegExpValidator(rx, self)
                 par = QLineEdit()
                 par.setValidator(validator)
-                self.sa_layout.addRow("Тета",par)
+                self.sa_layout.insertRow(0,"Тета",par)
             if rb.op == "CNOT":
                 rx = QRegExp('[0-9|,]*')
                 validator = QRegExpValidator(rx, self)
@@ -83,8 +83,8 @@ class Win(QMainWindow):
                 par2.setPlaceholderText("Номера изменяемых кубитов")
                 par.setValidator(validator)
                 par2.setValidator(validator)
-                self.sa_layout.addRow("C",par)
-                self.sa_layout.addRow("NOT",par2)
+                self.sa_layout.insertRow(0,"C",par)
+                self.sa_layout.insertRow(1,"NOT",par2)
 
         
     def act_f(self):
