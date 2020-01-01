@@ -68,6 +68,13 @@ class Win(QMainWindow):
                 c = self.sa_layout.takeAt(0)
                 if c.widget():
                     c.widget().deleteLater()
+            if rb.op == "H":
+                rx = QRegExp('[0-9|,]*')
+                validator = QRegExpValidator(rx, self)
+                par = QLineEdit()
+                par.setValidator(validator)
+                par.setPlaceholderText("Введите 0 для всех кубитов")
+                self.sa_layout.insertRow(0,"Кубит",par)
             if rb.op == "R": 
                 rx = QRegExp('[0-9|a-z|.|-]*')
                 validator = QRegExpValidator(rx, self)
@@ -122,8 +129,35 @@ class Win(QMainWindow):
             op = op_Z**n
             res = op @ q
         elif self.operator == "H":
-            op = op_H**n
-            res = op @ q
+            if self.sa_layout.itemAt(0,1).widget().text() == "":
+                op = op_H**n
+                res = op @ q
+            else:
+                try:
+                    s = self.sa_layout.itemAt(0,1).widget().text()
+                    qbits = [int(i) for i in s.split(',')]
+                except:
+                    self.line_out.setText("Ошибка обработки параметров")
+                    return
+         
+                for i in qbits:
+                    if i > n:
+                        self.line_out.setText("Превышение размера курегистра")
+                        return
+
+                for i in range(len(qbits)):
+                    qbits[i] -=1
+
+                l = list()
+                for i in range(n):
+                    l.append(op_I)
+                for i in qbits:
+                    l[i] = op_H
+                
+                op = op_I**0
+                for i in l:
+                    op = op*i
+                res = op @ q
         elif self.operator == "Fourier":
             res = fourier(q)
         elif self.operator == "R":
