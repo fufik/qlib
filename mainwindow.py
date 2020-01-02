@@ -129,7 +129,8 @@ class Win(QMainWindow):
             op = op_Z**n
             res = op @ q
         elif self.operator == "H":
-            if self.sa_layout.itemAt(0,1).widget().text() == "":
+            pr = self.sa_layout.itemAt(0,1).widget().text().replace(",","")
+            if pr == "" or pr == "0":
                 op = op_H**n
                 res = op @ q
             else:
